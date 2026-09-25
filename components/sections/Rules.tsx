@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ShieldCheck, AlertTriangle, Cpu, Users2 } from "lucide-react";
 import AccordionItem from "../ui/AccordionItem";
 import RevealText from "../ui/RevealText";
+import SpotlightReveal from "../effects/SpotlightReveal";
 
 interface Rule {
   id: string;
@@ -118,26 +119,28 @@ export default function Rules() {
         </p>
       </div>
 
-      {/* Accordion List */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-10% 0px" }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="divide-y divide-white/10 border-y border-white/10"
-      >
-        {rules.map((rule) => (
-          <AccordionItem
-            key={rule.id}
-            id={rule.id}
-            badge={rule.badge}
-            question={rule.title}
-            answer={rule.content}
-            isOpen={openId === rule.id}
-            onToggle={() => toggleAccordion(rule.id)}
-          />
-        ))}
-      </motion.div>
+      {/* Accordion List with Spotlight Reveal */}
+      <SpotlightReveal className="rounded-3xl border border-white/10 p-4 sm:p-8 bg-white/[0.015] backdrop-blur-sm shadow-xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="divide-y divide-white/10"
+        >
+          {rules.map((rule) => (
+            <AccordionItem
+              key={rule.id}
+              id={rule.id}
+              badge={rule.badge}
+              question={rule.title}
+              answer={rule.content}
+              isOpen={openId === rule.id}
+              onToggle={() => toggleAccordion(rule.id)}
+            />
+          ))}
+        </motion.div>
+      </SpotlightReveal>
     </section>
   );
 }

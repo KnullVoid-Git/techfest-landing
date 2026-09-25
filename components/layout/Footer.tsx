@@ -1,21 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Terminal, Shield, ArrowUp, Github, Disc as Discord, Twitter, Mail, MapPin } from "lucide-react";
 import { triggerEasterEgg } from "../ui/EasterEgg";
+import MatrixRain from "../effects/MatrixRain";
 import { useLenis } from "@/lib/useLenis";
 
 export default function Footer() {
   const { scrollTo } = useLenis();
+  const [latency, setLatency] = useState(14);
+
+  // Live fluctuating telemetry simulation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLatency(11 + Math.floor(Math.random() * 6));
+    }, 3200);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <footer className="relative border-t border-white/10 bg-[#060609] pt-16 pb-12 overflow-hidden">
+      {/* Background Matrix Digital Rain */}
+      <MatrixRain opacity={0.06} />
+
       {/* Background cyber accent glow */}
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10"
+      >
         {/* System Telemetry Banner */}
-        <div className="flex flex-wrap items-center justify-between gap-4 py-4 px-6 rounded-2xl bg-white/[0.02] border border-white/10 mb-14 text-xs font-mono">
+        <div className="flex flex-wrap items-center justify-between gap-4 py-4 px-6 rounded-2xl bg-white/[0.02] border border-white/10 mb-14 text-xs font-mono shadow-sm">
           <div className="flex items-center gap-3">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
@@ -25,7 +45,7 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center gap-6 text-ink-muted">
-            <span className="hidden sm:inline">LATENCY: <span className="text-ink">14ms</span></span>
+            <span className="hidden sm:inline">LATENCY: <span className="text-accent font-bold">{latency}ms</span></span>
             <span className="hidden md:inline">SECURITY PROTOCOL: <span className="text-accent">AES-GCM-256</span></span>
             <span className="flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-accent" />
@@ -50,40 +70,25 @@ export default function Footer() {
               The premier inter-collegiate 48-hour cyber heist, hardware challenge, and Capture The Flag championship. Built to push the boundaries of offensive security, reverse engineering, and cryptographic analysis.
             </p>
             <div className="pt-2 flex items-center gap-3">
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noreferrer"
-                className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-ink-muted hover:text-accent hover:border-accent/40 transition-colors"
-                aria-label="GitHub"
-              >
-                <Github className="w-4 h-4" />
-              </a>
-              <a
-                href="https://discord.com"
-                target="_blank"
-                rel="noreferrer"
-                className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-ink-muted hover:text-accent hover:border-accent/40 transition-colors"
-                aria-label="Discord"
-              >
-                <Discord className="w-4 h-4" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noreferrer"
-                className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-ink-muted hover:text-accent hover:border-accent/40 transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a
-                href="mailto:infiltrate@synapse2026.college"
-                className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-ink-muted hover:text-accent hover:border-accent/40 transition-colors"
-                aria-label="Email"
-              >
-                <Mail className="w-4 h-4" />
-              </a>
+              {[
+                { href: "https://github.com", icon: Github, label: "GitHub" },
+                { href: "https://discord.com", icon: Discord, label: "Discord" },
+                { href: "https://twitter.com", icon: Twitter, label: "Twitter" },
+                { href: "mailto:infiltrate@synapse2026.college", icon: Mail, label: "Email" },
+              ].map(({ href, icon: Icon, label }) => (
+                <motion.a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  whileHover={{ scale: 1.15, y: -3 }}
+                  whileTap={{ scale: 0.92 }}
+                  className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center text-ink-muted hover:text-accent hover:border-accent/50 hover:bg-accent/10 transition-colors"
+                  aria-label={label}
+                >
+                  <Icon className="w-4 h-4" />
+                </motion.a>
+              ))}
             </div>
           </div>
 
@@ -184,7 +189,7 @@ export default function Footer() {
             <ArrowUp className="w-3.5 h-3.5" />
           </button>
         </div>
-      </div>
+      </motion.div>
     </footer>
   );
 }

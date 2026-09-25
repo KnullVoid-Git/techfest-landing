@@ -14,29 +14,71 @@ interface TimeLeft {
   seconds: number;
 }
 
-function DigitSlot({ digit, label }: { digit: string; label: string }) {
+interface CircularSlotProps {
+  digit: string;
+  label: string;
+  fraction: number; // 0 to 1
+}
+
+function CircularDigitSlot({ digit, label, fraction }: CircularSlotProps) {
+  const radius = 31;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference * (1 - Math.max(0, Math.min(1, fraction)));
+
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2 sm:px-4 sm:py-3 min-w-[54px] sm:min-w-[70px] h-[58px] sm:h-[72px] flex items-center justify-center overflow-hidden shadow-inner backdrop-blur-md">
-        <AnimatePresence mode="popLayout" initial={false}>
-          <motion.span
-            key={digit}
-            initial={{ y: -30, opacity: 0, filter: "blur(4px)" }}
-            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-            exit={{ y: 30, opacity: 0, filter: "blur(4px)" }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="font-mono text-2xl sm:text-4xl font-bold text-accent tracking-tighter"
-          >
-            {digit}
-          </motion.span>
-        </AnimatePresence>
-        {/* Subtle top glare line */}
-        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+    <motion.div
+      whileHover={{ y: -3, scale: 1.05 }}
+      transition={{ duration: 0.2 }}
+      className="flex flex-col items-center group cursor-default"
+    >
+      <div className="relative w-[68px] sm:w-[82px] h-[68px] sm:h-[82px] flex items-center justify-center">
+        {/* SVG Circular Progress Ring */}
+        <svg className="w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 76 76">
+          {/* Background track circle */}
+          <circle
+            cx="38"
+            cy="38"
+            r={radius}
+            fill="transparent"
+            stroke="rgba(255, 255, 255, 0.08)"
+            strokeWidth="3.5"
+          />
+          {/* Active Progress stroke with neon drop shadow */}
+          <circle
+            cx="38"
+            cy="38"
+            r={radius}
+            fill="transparent"
+            stroke="#39ff88"
+            strokeWidth="3.5"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            className="transition-all duration-700 ease-out drop-shadow-[0_0_10px_rgba(57,255,136,0.65)]"
+          />
+        </svg>
+
+        {/* Center Digit Slot */}
+        <div className="absolute inset-2.5 rounded-full bg-black/40 border border-white/5 flex items-center justify-center backdrop-blur-md shadow-inner group-hover:border-accent/40 transition-colors">
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.span
+              key={digit}
+              initial={{ y: -16, opacity: 0, filter: "blur(3px)" }}
+              animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+              exit={{ y: 16, opacity: 0, filter: "blur(3px)" }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="font-mono text-xl sm:text-2xl font-black text-ink tracking-tight group-hover:text-accent transition-colors"
+            >
+              {digit}
+            </motion.span>
+          </AnimatePresence>
+        </div>
       </div>
-      <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-ink-muted mt-2">
+
+      <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-ink-muted group-hover:text-accent transition-colors mt-2">
         {label}
       </span>
-    </div>
+    </motion.div>
   );
 }
 
@@ -77,11 +119,11 @@ export default function Countdown({
 
   if (!isMounted) {
     return (
-      <div className="flex items-center gap-2 sm:gap-3 py-4 opacity-50">
-        <div className="w-14 h-16 bg-white/5 rounded-xl animate-pulse" />
-        <div className="w-14 h-16 bg-white/5 rounded-xl animate-pulse" />
-        <div className="w-14 h-16 bg-white/5 rounded-xl animate-pulse" />
-        <div className="w-14 h-16 bg-white/5 rounded-xl animate-pulse" />
+      <div className="flex items-center gap-3 sm:gap-4 py-4 opacity-50">
+        <div className="w-16 h-16 rounded-full bg-white/5 animate-pulse" />
+        <div className="w-16 h-16 rounded-full bg-white/5 animate-pulse" />
+        <div className="w-16 h-16 rounded-full bg-white/5 animate-pulse" />
+        <div className="w-16 h-16 rounded-full bg-white/5 animate-pulse" />
       </div>
     );
   }
@@ -89,14 +131,30 @@ export default function Countdown({
   const format2Digits = (num: number) => String(num).padStart(2, "0");
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3.5 select-none" aria-label="Event countdown">
-      <DigitSlot digit={format2Digits(timeLeft.days)} label="Days" />
-      <span className="text-xl sm:text-2xl font-mono text-accent/50 mb-6 font-bold">:</span>
-      <DigitSlot digit={format2Digits(timeLeft.hours)} label="Hours" />
-      <span className="text-xl sm:text-2xl font-mono text-accent/50 mb-6 font-bold">:</span>
-      <DigitSlot digit={format2Digits(timeLeft.minutes)} label="Mins" />
-      <span className="text-xl sm:text-2xl font-mono text-accent/50 mb-6 font-bold">:</span>
-      <DigitSlot digit={format2Digits(timeLeft.seconds)} label="Secs" />
+    <div className="flex items-center gap-2 sm:gap-4 select-none" aria-label="Event countdown">
+      <CircularDigitSlot
+        digit={format2Digits(timeLeft.days)}
+        label="Days"
+        fraction={timeLeft.days / 30}
+      />
+      <span className="text-lg sm:text-xl font-mono text-accent/40 mb-6 font-bold">:</span>
+      <CircularDigitSlot
+        digit={format2Digits(timeLeft.hours)}
+        label="Hours"
+        fraction={timeLeft.hours / 24}
+      />
+      <span className="text-lg sm:text-xl font-mono text-accent/40 mb-6 font-bold">:</span>
+      <CircularDigitSlot
+        digit={format2Digits(timeLeft.minutes)}
+        label="Mins"
+        fraction={timeLeft.minutes / 60}
+      />
+      <span className="text-lg sm:text-xl font-mono text-accent/40 mb-6 font-bold">:</span>
+      <CircularDigitSlot
+        digit={format2Digits(timeLeft.seconds)}
+        label="Secs"
+        fraction={timeLeft.seconds / 60}
+      />
     </div>
   );
 }

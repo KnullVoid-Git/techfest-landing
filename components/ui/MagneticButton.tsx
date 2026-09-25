@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { motion, useSpring } from "framer-motion";
 
 import type { HTMLMotionProps } from "framer-motion";
+import { soundManager } from "@/lib/sounds";
 
 interface MagneticButtonProps extends Omit<HTMLMotionProps<"div">, "children"> {
   children: React.ReactNode;
@@ -62,6 +63,10 @@ export default function MagneticButton({
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onClick={(e) => {
+        soundManager.playClick();
+        if (props.onClick) props.onClick(e);
+      }}
       style={isDisabled ? undefined : { x, y }}
       className={`inline-block ${className}`}
       {...props}

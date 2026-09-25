@@ -27,7 +27,7 @@ export default function RevealText({
   inViewTrigger = true,
 }: RevealTextProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
+  const isInView = useInView(ref, { once: true, amount: 0.1 });
   const shouldAnimate = inViewTrigger ? isInView : true;
 
   const words = text.split(" ");

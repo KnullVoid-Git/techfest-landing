@@ -8,6 +8,7 @@ import Rules from "@/components/sections/Rules";
 import Prizes from "@/components/sections/Prizes";
 import FAQ from "@/components/sections/FAQ";
 import Register from "@/components/sections/Register";
+import SectionWipe from "@/components/effects/SectionWipe";
 
 export default function Home() {
   return (
@@ -15,26 +16,40 @@ export default function Home() {
       {/* Top sticky/blur navbar */}
       <Navbar />
 
-      {/* Hero with live countdown, kinetic stagger typography & magnetic CTAs */}
+      {/* Hero with live countdown, kinetic stagger typography, 3D core & magnetic CTAs */}
       <Hero />
 
-      {/* About section with counting stats */}
+      <SectionWipe />
+
+      {/* About section with counting stats & 3D cyber attack globe */}
       <About />
 
-      {/* 6 Combat tracks with cursor glow cards */}
+      <SectionWipe />
+
+      {/* 6 Combat tracks with cursor glow cards & 3D tilt */}
       <Tracks />
+
+      <SectionWipe />
 
       {/* Pinned scroll-scrubbed timeline */}
       <HowItWorks />
 
+      <SectionWipe />
+
       {/* Rules of engagement accordion */}
       <Rules />
 
-      {/* Prize podium & bounties */}
+      <SectionWipe />
+
+      {/* Prize podium with 3D cards & sponsor marquee */}
       <Prizes />
+
+      <SectionWipe />
 
       {/* FAQ accordion */}
       <FAQ />
+
+      <SectionWipe />
 
       {/* Validated team registration form */}
       <Register />

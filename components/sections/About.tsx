@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Shield, Trophy, Users, Clock, ArrowUpRight } from "lucide-react";
 import RevealText from "../ui/RevealText";
+import CyberGlobe from "../3d/CyberGlobe";
 
 interface StatProps {
   label: string;
@@ -18,28 +19,49 @@ function StatCounter({ label, value, prefix = "", suffix = "", subtext, icon }: 
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-15% 0px" });
   const [displayValue, setDisplayValue] = useState(0);
+  const [rotate, setRotate] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!isInView) return;
 
-    let start = 0;
-    const duration = 1800;
-    const stepTime = 25;
-    const steps = duration / stepTime;
-    const increment = value / steps;
+    let startTimestamp: number | null = null;
+    const duration = 2000;
 
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= value) {
-        setDisplayValue(value);
-        clearInterval(timer);
+    // Spring overshoot easing
+    const easeOutBack = (t: number) => {
+      const c1 = 1.3;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    };
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easedProgress = progress === 1 ? 1 : easeOutBack(progress);
+      const currentVal = Math.floor(value * easedProgress);
+
+      setDisplayValue(Math.max(0, currentVal));
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
       } else {
-        setDisplayValue(Math.floor(start));
+        setDisplayValue(value);
       }
-    }, stepTime);
+    };
 
-    return () => clearInterval(timer);
+    requestAnimationFrame(step);
   }, [isInView, value]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    setRotate({ x: -(y / rect.height) * 12, y: (x / rect.width) * 12 });
+  };
+
+  const handleMouseLeave = () => {
+    setRotate({ x: 0, y: 0 });
+  };
 
   return (
     <motion.div
@@ -48,29 +70,39 @@ function StatCounter({ label, value, prefix = "", suffix = "", subtext, icon }: 
         hidden: { opacity: 0, y: 24 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
       }}
-      className="relative p-6 sm:p-8 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-accent/40 transition-colors group overflow-hidden"
+      className="h-full"
     >
-      <div className="flex items-center justify-between mb-4">
-        <span className="font-mono text-xs uppercase tracking-widest text-ink-muted">
-          {label}
-        </span>
-        <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-ink-muted group-hover:text-accent group-hover:border-accent/30 transition-all">
-          {icon}
+      <div
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+          transition: "transform 0.15s ease-out",
+        }}
+        className="relative h-full p-6 sm:p-8 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-accent/40 transition-colors group overflow-hidden cursor-default shadow-sm hover:shadow-[0_0_30px_rgba(57,255,136,0.1)]"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <span className="font-mono text-xs uppercase tracking-widest text-ink-muted">
+            {label}
+          </span>
+          <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-ink-muted group-hover:text-accent group-hover:border-accent/30 group-hover:scale-110 transition-all">
+            {icon}
+          </div>
         </div>
+
+        <div className="font-display font-black text-3xl sm:text-5xl text-ink tracking-tight mb-2 group-hover:text-accent transition-colors">
+          {prefix}
+          {displayValue.toLocaleString()}
+          {suffix}
+        </div>
+
+        <p className="text-xs font-mono text-ink-dim uppercase tracking-wider">
+          {subtext}
+        </p>
+
+        {/* Hover glow */}
+        <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-accent/15 rounded-full blur-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
-
-      <div className="font-display font-black text-3xl sm:text-5xl text-ink tracking-tight mb-2 group-hover:text-accent transition-colors">
-        {prefix}
-        {displayValue.toLocaleString()}
-        {suffix}
-      </div>
-
-      <p className="text-xs font-mono text-ink-dim uppercase tracking-wider">
-        {subtext}
-      </p>
-
-      {/* Hover glow */}
-      <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-accent/10 rounded-full blur-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
     </motion.div>
   );
 }
@@ -98,8 +130,8 @@ export default function About() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mb-16 sm:mb-24">
-        {/* Left Column: Big Headline */}
-        <div className="lg:col-span-6">
+        {/* Left Column: Big Headline & Interactive Cyber Attack Globe */}
+        <div className="lg:col-span-6 space-y-6">
           <RevealText
             text="WHERE CODE COLLIDES WITH AN ALTERNATE REALITY HUNT"
             tag="h2"
@@ -107,13 +139,25 @@ export default function About() {
             stagger={0.04}
             className="font-display font-bold text-3xl sm:text-5xl md:text-6xl text-ink tracking-tight leading-[1.05]"
           />
+
+          {/* Interactive 3D Cyber Attack Globe Card */}
+          <div className="rounded-2xl bg-white/[0.015] border border-white/10 p-5 relative overflow-hidden backdrop-blur-sm group">
+            <div className="flex items-center justify-between text-[11px] font-mono text-ink-dim mb-2">
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+                <span className="text-ink font-semibold">GLOBAL ATTACK VECTOR GRID</span>
+              </span>
+              <span className="text-accent/80 text-[10px]">[DRAG TO ROTATE]</span>
+            </div>
+            <CyberGlobe className="h-[240px] sm:h-[280px]" />
+          </div>
         </div>
 
         {/* Right Column: Narrative Copy */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-10% 0px" }}
+          viewport={{ once: true, amount: 0.1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="lg:col-span-6 space-y-6 text-base sm:text-lg text-ink-muted leading-relaxed"
         >
@@ -139,7 +183,7 @@ export default function About() {
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-10% 0px" }}
+        viewport={{ once: true, amount: 0.1 }}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         <StatCounter

@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Trophy, Award, Medal, Zap, Sparkles, Shield, Cpu } from "lucide-react";
 import RevealText from "../ui/RevealText";
+import PrizePodium from "../3d/PrizePodium";
 
 interface PrizeTier {
   place: string;
@@ -100,6 +101,96 @@ const sponsors = [
   { name: "Silicon Syndicate", tier: "Hardware Partner" },
 ];
 
+function PodiumCard({ tier, idx }: { tier: PrizeTier; idx: number }) {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const tiltX = -((y - rect.height / 2) / (rect.height / 2)) * 9;
+    const tiltY = ((x - rect.width / 2) / (rect.width / 2)) * 9;
+    setTilt({ x: tiltX, y: tiltY });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTilt({ x: 0, y: 0 });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.7, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+      className="h-full"
+    >
+      <div
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(${isHovered ? -8 : 0}px)`,
+          transition: "transform 0.18s ease-out",
+        }}
+        className={`relative h-full rounded-3xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden cursor-default ${
+          tier.featured
+            ? "bg-white/[0.04] border-2 border-accent shadow-[0_0_50px_rgba(57,255,136,0.18)] lg:-translate-y-4"
+            : `bg-white/[0.02] border ${tier.borderColor} hover:border-white/30`
+        }`}
+      >
+      {tier.featured && (
+        <div className="absolute top-0 right-0 bg-accent text-bg text-[10px] font-mono font-black uppercase px-4 py-1.5 rounded-bl-xl tracking-widest flex items-center gap-1 shadow-md">
+          <Sparkles className="w-3 h-3" />
+          TOP VAULT
+        </div>
+      )}
+
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <span className="font-mono text-xs uppercase tracking-widest text-ink-dim font-semibold">
+            {tier.place}
+          </span>
+          <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+            {tier.icon}
+          </div>
+        </div>
+
+        <h3 className="font-display font-semibold text-lg text-ink-muted uppercase tracking-wider mb-2">
+          {tier.rank}
+        </h3>
+
+        <div className="font-display font-black text-4xl sm:text-5xl text-ink tracking-tight mb-1">
+          <span className={tier.highlightColor}>{tier.amount}</span>
+        </div>
+        <span className="font-mono text-xs text-ink-dim block mb-8">
+          {tier.usdEquivalent}
+        </span>
+
+        <div className="space-y-3 pt-6 border-t border-white/10">
+          <span className="text-[11px] font-mono uppercase text-ink-dim tracking-wider block">
+            INCLUDED PERKS & BOUNTIES:
+          </span>
+          {tier.perks.map((perk, i) => (
+            <div key={i} className="flex items-start gap-2.5 text-xs text-ink-muted leading-relaxed">
+              <span className="text-accent font-bold mt-0.5">•</span>
+              <span>{perk}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between text-xs font-mono text-ink-dim">
+        <span>PODIUM TIER #{idx + 1}</span>
+        <span className="text-accent">VERIFIED VAULT</span>
+      </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Prizes() {
   return (
     <section id="prizes" className="py-24 sm:py-32 px-6 sm:px-8 max-w-7xl mx-auto relative">
@@ -130,78 +221,29 @@ export default function Prizes() {
         </div>
       </div>
 
-      {/* Podium Cards Grid (2nd, 1st, 3rd) */}
+      {/* 3D Tiered Trophy Stage */}
+      <PrizePodium className="mb-4 sm:mb-8" />
+
+      {/* Podium Cards Grid (2nd, 1st, 3rd) with 3D Tilt */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch mb-16">
         {tiers.map((tier, idx) => (
-          <motion.div
-            key={tier.place}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10% 0px" }}
-            transition={{ duration: 0.7, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className={`relative rounded-3xl p-8 sm:p-10 flex flex-col justify-between overflow-hidden transition-all duration-300 ${
-              tier.featured
-                ? "bg-white/[0.04] border-2 border-accent shadow-[0_0_50px_rgba(57,255,136,0.18)] lg:-translate-y-4"
-                : `bg-white/[0.02] border ${tier.borderColor}`
-            }`}
-          >
-            {tier.featured && (
-              <div className="absolute top-0 right-0 bg-accent text-bg text-[10px] font-mono font-black uppercase px-4 py-1.5 rounded-bl-xl tracking-widest flex items-center gap-1 shadow-md">
-                <Sparkles className="w-3 h-3" />
-                TOP VAULT
-              </div>
-            )}
-
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <span className="font-mono text-xs uppercase tracking-widest text-ink-dim font-semibold">
-                  {tier.place}
-                </span>
-                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  {tier.icon}
-                </div>
-              </div>
-
-              <h3 className="font-display font-semibold text-lg text-ink-muted uppercase tracking-wider mb-2">
-                {tier.rank}
-              </h3>
-
-              <div className="font-display font-black text-4xl sm:text-5xl text-ink tracking-tight mb-1">
-                <span className={tier.highlightColor}>{tier.amount}</span>
-              </div>
-              <span className="font-mono text-xs text-ink-dim block mb-8">
-                {tier.usdEquivalent}
-              </span>
-
-              <div className="space-y-3 pt-6 border-t border-white/10">
-                <span className="text-[11px] font-mono uppercase text-ink-dim tracking-wider block">
-                  INCLUDED PERKS & BOUNTIES:
-                </span>
-                {tier.perks.map((perk, i) => (
-                  <div key={i} className="flex items-start gap-2.5 text-xs text-ink-muted leading-relaxed">
-                    <span className="text-accent font-bold mt-0.5">•</span>
-                    <span>{perk}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between text-xs font-mono text-ink-dim">
-              <span>PODIUM TIER #{idx + 1}</span>
-              <span className="text-accent">VERIFIED VAULT</span>
-            </div>
-          </motion.div>
+          <PodiumCard key={tier.place} tier={tier} idx={idx} />
         ))}
       </div>
 
       {/* Special Category Bounties */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-        {specialBounties.map((bounty) => {
+        {specialBounties.map((bounty, bIdx) => {
           const Icon = bounty.icon;
           return (
-            <div
+            <motion.div
               key={bounty.title}
-              className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-accent/40 transition-colors flex flex-col justify-between"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: bIdx * 0.1, duration: 0.5 }}
+              whileHover={{ y: -4 }}
+              className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-accent/40 transition-colors flex flex-col justify-between cursor-default"
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
@@ -222,23 +264,37 @@ export default function Prizes() {
               <span className="text-[10px] font-mono text-ink-dim mt-4 uppercase tracking-wider">
                 CATEGORY BOUNTY
               </span>
-            </div>
+            </motion.div>
           );
         })}
       </div>
 
-      {/* Sponsors & Partners Marquee Strip */}
-      <div className="p-8 rounded-2xl bg-white/[0.015] border border-white/10">
+      {/* Sponsors & Partners Infinite Marquee */}
+      <div className="p-8 rounded-2xl bg-white/[0.015] border border-white/10 overflow-hidden relative">
         <span className="font-mono text-xs uppercase tracking-widest text-ink-dim block text-center mb-6">
           BACKED BY INDUSTRY SECURITY LEADERS
         </span>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 items-center text-center">
-          {sponsors.map((sp) => (
-            <div key={sp.name} className="p-4 rounded-xl bg-white/[0.02] border border-white/5">
-              <span className="font-display font-bold text-sm text-ink block">{sp.name}</span>
-              <span className="text-[10px] font-mono text-accent/80 uppercase">{sp.tier}</span>
-            </div>
-          ))}
+
+        {/* Gradient edge masks for smooth marquee fade */}
+        <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#08080c] to-transparent z-10" />
+        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#08080c] to-transparent z-10" />
+
+        <div className="flex overflow-hidden">
+          <motion.div
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+            className="flex items-center gap-6 shrink-0"
+          >
+            {[...sponsors, ...sponsors].map((sp, idx) => (
+              <div
+                key={`${sp.name}-${idx}`}
+                className="w-56 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-accent/30 transition-colors text-center shrink-0"
+              >
+                <span className="font-display font-bold text-sm text-ink block truncate">{sp.name}</span>
+                <span className="text-[10px] font-mono text-accent/80 uppercase tracking-wider">{sp.tier}</span>
+              </div>
+            ))}
+          </motion.div>
         </div>
       </div>
     </section>

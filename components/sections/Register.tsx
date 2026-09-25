@@ -170,8 +170,8 @@ export default function Register() {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Full Name */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
+                <div className="space-y-2 group">
+                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5 group-focus-within:text-accent transition-colors">
                     <User className="w-3.5 h-3.5 text-accent" />
                     Team Leader Name *
                   </label>
@@ -180,8 +180,8 @@ export default function Register() {
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="e.g. Alex Vance"
-                    className={`w-full bg-black/40 border rounded-xl px-4 py-3.5 text-sm text-ink placeholder-ink-dim/50 focus:outline-none transition-colors ${
-                      errors.fullName ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-accent"
+                    className={`w-full bg-black/40 border rounded-xl px-4 py-3.5 text-sm text-ink placeholder-ink-dim/50 focus:outline-none transition-all duration-300 ${
+                      errors.fullName ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-accent focus:shadow-[0_0_20px_rgba(57,255,136,0.18)]"
                     }`}
                   />
                   {errors.fullName && (
@@ -190,8 +190,8 @@ export default function Register() {
                 </div>
 
                 {/* Email */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
+                <div className="space-y-2 group">
+                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5 group-focus-within:text-accent transition-colors">
                     <Mail className="w-3.5 h-3.5 text-accent" />
                     Contact Email *
                   </label>
@@ -200,8 +200,8 @@ export default function Register() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="alex@university.edu"
-                    className={`w-full bg-black/40 border rounded-xl px-4 py-3.5 text-sm text-ink placeholder-ink-dim/50 focus:outline-none transition-colors ${
-                      errors.email ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-accent"
+                    className={`w-full bg-black/40 border rounded-xl px-4 py-3.5 text-sm text-ink placeholder-ink-dim/50 focus:outline-none transition-all duration-300 ${
+                      errors.email ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-accent focus:shadow-[0_0_20px_rgba(57,255,136,0.18)]"
                     }`}
                   />
                   {errors.email && (
@@ -212,8 +212,8 @@ export default function Register() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* College Name */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
+                <div className="space-y-2 group">
+                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5 group-focus-within:text-accent transition-colors">
                     <School className="w-3.5 h-3.5 text-accent" />
                     College / University *
                   </label>
@@ -222,8 +222,8 @@ export default function Register() {
                     value={formData.college}
                     onChange={(e) => setFormData({ ...formData, college: e.target.value })}
                     placeholder="e.g. Institute of Technology"
-                    className={`w-full bg-black/40 border rounded-xl px-4 py-3.5 text-sm text-ink placeholder-ink-dim/50 focus:outline-none transition-colors ${
-                      errors.college ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-accent"
+                    className={`w-full bg-black/40 border rounded-xl px-4 py-3.5 text-sm text-ink placeholder-ink-dim/50 focus:outline-none transition-all duration-300 ${
+                      errors.college ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-accent focus:shadow-[0_0_20px_rgba(57,255,136,0.18)]"
                     }`}
                   />
                   {errors.college && (
@@ -232,8 +232,8 @@ export default function Register() {
                 </div>
 
                 {/* Team Codename */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
+                <div className="space-y-2 group">
+                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5 group-focus-within:text-accent transition-colors">
                     <Terminal className="w-3.5 h-3.5 text-accent" />
                     Team Handle / Codename *
                   </label>
@@ -242,8 +242,8 @@ export default function Register() {
                     value={formData.teamName}
                     onChange={(e) => setFormData({ ...formData, teamName: e.target.value })}
                     placeholder="e.g. NullPointerSquad"
-                    className={`w-full bg-black/40 border rounded-xl px-4 py-3.5 text-sm text-ink placeholder-ink-dim/50 focus:outline-none transition-colors ${
-                      errors.teamName ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-accent"
+                    className={`w-full bg-black/40 border rounded-xl px-4 py-3.5 text-sm text-ink placeholder-ink-dim/50 focus:outline-none transition-all duration-300 ${
+                      errors.teamName ? "border-red-500 focus:border-red-500" : "border-white/10 focus:border-accent focus:shadow-[0_0_20px_rgba(57,255,136,0.18)]"
                     }`}
                   />
                   {errors.teamName && (
@@ -254,14 +254,14 @@ export default function Register() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Primary Track Interest */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted">
+                <div className="space-y-2 group">
+                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted group-focus-within:text-accent transition-colors">
                     Primary Track Interest
                   </label>
                   <select
                     value={formData.primaryTrack}
                     onChange={(e) => setFormData({ ...formData, primaryTrack: e.target.value })}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-ink focus:outline-none focus:border-accent cursor-pointer"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-ink focus:outline-none focus:border-accent focus:shadow-[0_0_20px_rgba(57,255,136,0.18)] transition-all duration-300 cursor-pointer"
                   >
                     <option value="Web Exploitation">Track 01: Web Exploitation</option>
                     <option value="Cryptography & Ciphers">Track 02: Cryptography & Ciphers</option>
@@ -273,15 +273,15 @@ export default function Register() {
                 </div>
 
                 {/* Team Size */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
+                <div className="space-y-2 group">
+                  <label className="text-xs font-mono uppercase tracking-wider text-ink-muted flex items-center gap-1.5 group-focus-within:text-accent transition-colors">
                     <Users className="w-3.5 h-3.5 text-accent" />
                     Squad Size (Members)
                   </label>
                   <select
                     value={formData.teamSize}
                     onChange={(e) => setFormData({ ...formData, teamSize: e.target.value })}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-ink focus:outline-none focus:border-accent cursor-pointer"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-ink focus:outline-none focus:border-accent focus:shadow-[0_0_20px_rgba(57,255,136,0.18)] transition-all duration-300 cursor-pointer"
                   >
                     <option value="1">1 Operative (Solo Infiltrator)</option>
                     <option value="2">2 Operatives (Duo)</option>
