@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #08080c;
+  --accent: #39ff88;
+  --accent-lime: #c6ff3d;
+  --ink: #f4eeff;
+  --muted: #a99cc4;
+  --card: rgba(255, 255, 255, 0.025);
+  --line: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  scroll-behavior: smooth;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Hide native cursor on desktop to let CustomCursor shine */
+@media (hover: hover) and (pointer: fine) {
+  body:not(.prefers-reduced-motion) {
+    cursor: none;
+  }
+  body:not(.prefers-reduced-motion) a,
+  body:not(.prefers-reduced-motion) button,
+  body:not(.prefers-reduced-motion) input,
+  body:not(.prefers-reduced-motion) select,
+  body:not(.prefers-reduced-motion) textarea {
+    cursor: none;
+  }
+}
+
+/* Text selection with cyber neon highlight */
+::selection {
+  background: #39ff88;
+  color: #08080c;
+}
+
+/* Subtle background noise texture */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Gravité Mode (Easter Egg physical gag homage) */
+body.gravity-mode {
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: rotate(1.5deg) scale(0.98);
+}
+body.gravity-mode * {
+  animation: zero-gravity-float 5s ease-in-out infinite alternate !important;
+}
+
+@keyframes zero-gravity-float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-0.5deg);
+  }
+  100% {
+    transform: translateY(6px) rotate(0.5deg);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #08080c;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Reduced motion fallbacks */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
